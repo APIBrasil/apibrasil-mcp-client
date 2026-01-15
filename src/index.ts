@@ -355,12 +355,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    const responseData = (error as any)?.response?.data ? 
+      `\n${JSON.stringify((error as any).response.data, null, 2)}` : '';
+    
     return {
       content: [
         {
           type: 'text',
-          text: `Error: ${error.message}\n${error.response?.data ? JSON.stringify(error.response.data, null, 2) : ''}`,
+          text: `Error: ${errorMessage}${responseData}`,
         },
       ],
       isError: true,
