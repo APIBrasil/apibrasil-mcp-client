@@ -1,0 +1,37 @@
+{
+  "name": "apibrasil-mcp-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol (MCP) server for APIBrasil services",
+  "type": "module",
+  "bin": {
+    "apibrasil-mcp-server": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "apibrasil",
+    "whatsapp",
+    "cpf",
+    "cnpj",
+    "cep",
+    "brazil"
+  ],
+  "author": "APIBrasil",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
