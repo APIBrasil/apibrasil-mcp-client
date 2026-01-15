@@ -1,0 +1,115 @@
+<svg width="100%" height="280" viewBox="0 0 800 280" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradiente de Fundo (Deep Tech Blue - Inspirado no Azul do Logo) -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#001e36" /> <!-- Darker version of #0285D9 -->
+      <stop offset="100%" stop-color="#001526" />
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Gradiente Stream (Amarelo Elétrico - Inspirado no Amarelo do Logo) -->
+    <linearGradient id="stream-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FECB01" stop-opacity="0" />
+      <stop offset="50%" stop-color="#FECB01" />
+      <stop offset="100%" stop-color="#FECB01" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="url(#bg-grad)" />
+  
+  <!-- Grid Decorativo -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#0285D9" stroke-width="0.5" opacity="0.1"/>
+  </pattern>
+  <rect width="100%" height="100%" fill="url(#grid)" />
+
+  <!-- Central Hub (APIBrasil Logo - Abstrato) -->
+  <g transform="translate(400, 140)">
+    <!-- Círculos Orbitais -->
+    <circle r="60" fill="none" stroke="#0285D9" stroke-width="1" opacity="0.3" />
+    <circle r="80" fill="none" stroke="#01A801" stroke-width="1" stroke-dasharray="4 4" opacity="0.2">
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="20s" repeatCount="indefinite" />
+    </circle>
+    
+    <!-- Core Brilhante (Substituindo o mapa por um core de energia) -->
+    <circle r="30" fill="url(#api-grad)" filter="url(#glow)" opacity="0.9" />
+    <circle r="15" fill="#fff" opacity="0.2">
+        <animate attributeName="r" values="15;20;15" dur="3s" repeatCount="indefinite" />
+    </circle>
+    
+    <!-- Text -->
+    <text x="0" y="80" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-weight="bold" font-size="24" fill="#fff" letter-spacing="1">APIBrasil</text>
+    <text x="0" y="100" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#94a3b8">Gateway Core</text>
+  </g>
+
+  <!-- Cluster IA (Esquerda - Usando Azul #0285D9) -->
+  <g stroke="url(#stream-grad)" stroke-width="2" fill="none" opacity="0.8">
+     <!-- Linha 1 -->
+     <path d="M100 100 C 200 100, 250 140, 340 140">
+        <animate attributeName="stroke-dasharray" from="0,1000" to="1000,0" dur="2.5s" repeatCount="indefinite" />
+     </path>
+     <!-- Linha 2 -->
+     <path d="M80 140 C 180 140, 250 140, 340 140">
+        <animate attributeName="stroke-dasharray" from="0,1000" to="1000,0" dur="2s" repeatCount="indefinite" />
+     </path>
+     <!-- Linha 3 -->
+     <path d="M100 180 C 200 180, 250 140, 340 140">
+        <animate attributeName="stroke-dasharray" from="0,1000" to="1000,0" dur="2.2s" repeatCount="indefinite" />
+     </path>
+  </g>
+
+  <!-- Nós IA -->
+  <g transform="translate(100, 100)"> <!-- Top Node -->
+    <animateTransform attributeName="transform" type="translate" values="100 100; 100 96; 100 100" dur="3s" repeatCount="indefinite" additive="replace" />
+    <circle r="15" fill="#001e36" stroke="#0285D9" stroke-width="2" />
+    <text x="0" y="4" text-anchor="middle" font-family="monospace" font-size="8" fill="#0285D9">AI</text>
+  </g>
+  <g transform="translate(80, 140)"> <!-- Mid Node -->
+    <animateTransform attributeName="transform" type="translate" values="80 140; 80 135; 80 140" dur="4s" repeatCount="indefinite" additive="replace" />
+    <circle r="20" fill="#001e36" stroke="#0285D9" stroke-width="2" />
+    <text x="0" y="5" text-anchor="middle" font-family="monospace" font-size="10" fill="#0285D9">MCP</text>
+  </g>
+  <g transform="translate(100, 180)"> <!-- Bottom Node -->
+    <animateTransform attributeName="transform" type="translate" values="100 180; 100 176; 100 180" dur="2.5s" repeatCount="indefinite" additive="replace" />
+    <circle r="15" fill="#001e36" stroke="#0285D9" stroke-width="2" />
+    <text x="0" y="4" text-anchor="middle" font-family="monospace" font-size="8" fill="#0285D9">LLM</text>
+  </g>
+  <text x="60" y="210" font-family="sans-serif" font-size="10" fill="#64748b">Cursor / Claude / Agents</text>
+
+
+  <!-- Cluster REST (Direita - Usando Verde #01A801) -->
+  <g stroke="url(#stream-grad)" stroke-width="2" fill="none" opacity="0.6">
+     <path d="M460 140 C 550 140, 600 120, 700 120">
+        <animate attributeName="stroke-dasharray" from="0,1000" to="1000,0" dur="3s" repeatCount="indefinite" />
+     </path>
+     <path d="M460 140 C 550 140, 600 160, 700 160">
+        <animate attributeName="stroke-dasharray" from="0,1000" to="1000,0" dur="2.8s" repeatCount="indefinite" />
+     </path>
+  </g>
+
+  <!-- Nós REST -->
+  <g transform="translate(700, 120)">
+    <animateTransform attributeName="transform" type="translate" values="700 120; 700 116; 700 120" dur="3.5s" repeatCount="indefinite" additive="replace" />
+    <circle r="18" fill="#001e36" stroke="#01A801" stroke-width="2" />
+    <text x="0" y="5" text-anchor="middle" font-family="monospace" font-size="9" fill="#01A801">APP</text>
+  </g>
+  <g transform="translate(700, 160)">
+    <animateTransform attributeName="transform" type="translate" values="700 160; 700 156; 700 160" dur="4.5s" repeatCount="indefinite" additive="replace" />
+    <circle r="18" fill="#001e36" stroke="#01A801" stroke-width="2" />
+    <text x="0" y="5" text-anchor="middle" font-family="monospace" font-size="9" fill="#01A801">BOT</text>
+  </g>
+  <text x="740" y="190" text-anchor="end" font-family="sans-serif" font-size="10" fill="#64748b">Low-Code / Automation</text>
+  
+  <!-- Labels Top -->
+  <text x="400" y="30" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" fill="#0285D9" letter-spacing="4" opacity="0.8">UNIVERSAL CONNECTION</text>
+
+</svg>

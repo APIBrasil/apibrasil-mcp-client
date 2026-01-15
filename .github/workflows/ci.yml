@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Validate JSON files
+      run: |
+        # Encontra todos os .json e tenta parsear com python -m json.tool
+        # Se falhar, o script para e o CI falha.
+        find . -name "*.json" -not -path "./.git/*" -print0 | xargs -0 -I {} bash -c 'echo "Checking {}"; python3 -m json.tool "{}" > /dev/null'
+
+    - name: Check if README index is up to date
+      run: |
+        python3 scripts/update_readme_tree.py
+        # Se houver mudanças (git status não vazio), significa que o autor esqueceu de rodar o script.
+        if [[ -n $(git status --porcelain README.md) ]]; then
+          echo "❌ README.md is out of sync with directory structure."
+          echo "Please run 'python scripts/update_readme_tree.py' and commit the changes."
+          git diff README.md
+          exit 1
+        else
+          echo "✅ README.md is up to date."
+        fi

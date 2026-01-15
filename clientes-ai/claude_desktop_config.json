@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "apibrasil": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sse-client",
+        "--url",
+        "https://mcp.apibrasil.cloud/mcp"
+      ]
+    }
+  }
+}
