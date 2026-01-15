@@ -193,6 +193,11 @@ npm run watch
 - Telegram Group: https://t.me/apigratisoficial
 - Documentation: https://apibrasil.com.br/documentacoes
 
+## Additional Documentation
+
+- [Usage Examples](USAGE.md) - Detailed examples and integration guides
+- [Contributing Guide](CONTRIBUTING.md) - Guidelines for contributing to the project
+
 ## License
 
 MIT
