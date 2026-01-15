@@ -1,0 +1,131 @@
+{
+  "name": "APIBrasil - Consulta CNPJ e WhatsApp",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook-apibrasil",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://gateway.apibrasil.io/api/v2/dados/cnpj/credits",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "DeviceToken",
+              "value": "={{ $env.APIBRASIL_DEVICE_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cnpj",
+              "value": "={{ $json.body.cnpj }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "consulta-cnpj",
+      "name": "APIBrasil - Consulta CNPJ",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "APIBrasil_Auth",
+          "name": "APIBrasil Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://gateway.apibrasil.io/api/v2/whatsapp/sendText",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "DeviceToken",
+              "value": "={{ $env.APIBRASIL_DEVICE_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $json.body.telefone_destino }}"
+            },
+            {
+              "name": "text",
+              "value": "=Olá! A empresa {{ $node[\"APIBrasil - Consulta CNPJ\"].json.razao_social }} está {{ $node[\"APIBrasil - Consulta CNPJ\"].json.situacao_cadastral }}."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        440,
+        0
+      ],
+      "id": "envia-whatsapp",
+      "name": "APIBrasil - Envia WhatsApp",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "APIBrasil_Auth",
+          "name": "APIBrasil Header Auth"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "APIBrasil - Consulta CNPJ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "APIBrasil - Consulta CNPJ": {
+      "main": [
+        [
+          {
+            "node": "APIBrasil - Envia WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

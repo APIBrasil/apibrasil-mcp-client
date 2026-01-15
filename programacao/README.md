@@ -1,41 +1,78 @@
-# Uso em Código (Node.js e Python)
+# Consumindo APIBrasil MCP com C# (.NET)
 
-Para integrações customizadas (bots, scripts, automações).
+Exemplo usando `HttpClient`.
 
-## Node.js
+## 1. Código (Program.cs)
 
-Use o `SSEClientTransport` do SDK oficial.
+```csharp
+using System;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
 
-```typescript
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
-import { EventSource } from "eventsource"; // Necessário instalar: npm install eventsource
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        var client = new HttpClient();
+        string baseUrl = "https://mcp.apibrasil.cloud/mcp";
 
-global.EventSource = EventSource;
+        Console.WriteLine("Conectando ao SSE...");
 
-const transport = new SSEClientTransport(new URL("https://mcp.apibrasil.cloud/mcp"));
-const client = new Client({ name: "my-app", version: "1.0" }, { capabilities: {} });
+        // 1. Ler stream SSE para capturar URL de sessão
+        using (var stream = await client.GetStreamAsync(baseUrl))
+        using (var reader = new StreamReader(stream))
+        {
+            string line;
+            string postUrl = null;
 
-await client.connect(transport);
-// client.callTool(...)
-```
+            while ((line = await reader.ReadLineAsync()) != null)
+            {
+                Console.WriteLine($"Recebido: {line}");
+                if (line.StartsWith("data: "))
+                {
+                    var endpoint = line.Substring(6).Trim();
+                    // Constrói URL completa
+                    postUrl = "https://mcp.apibrasil.cloud" + endpoint;
+                    Console.WriteLine($"Session URL: {postUrl}");
+                    break; // Sai do loop para fazer o POST
+                }
+            }
+            
+            // 2. Enviar comando (JSON-RPC) em outra thread/task ou conexão
+            if (!string.IsNullOrEmpty(postUrl)) 
+            {
+                await CallTool(postUrl);
+            }
+        }
+    }
 
-## Python
+    static async Task CallTool(string url)
+    {
+        var client = new HttpClient();
+        
+        string json = @"
+        {
+            ""jsonrpc"": ""2.0"",
+            ""method"": ""tools/call"",
+            ""id"": 1,
+            ""params"": {
+                ""name"": ""cep_lookup"",
+                ""arguments"": {
+                    ""cep"": ""01001000"",
+                    ""bearer"": ""SEU_BEARER"",
+                    ""deviceToken"": ""SEU_DEVICE_TOKEN""
+                }
+            }
+        }";
 
-Use o cliente MCP Python.
-
-```python
-# pip install mcp
-from mcp.client.sse import sse_client
-
-async with sse_client("https://mcp.apibrasil.cloud/mcp") as client:
-    # Listar ferramentas
-    tools = await client.list_tools()
-    
-    # Chamar ferramenta
-    result = await client.call_tool("cep_lookup", arguments={
-        "cep": "01001000", 
-        "bearer": "SEU_TOKEN",
-        "deviceToken": "SEU_DEVICE_TOKEN"
-    })
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await client.PostAsync(url, content);
+        
+        string result = await response.Content.ReadAsStringAsync();
+        Console.WriteLine("\nResposta do Servidor:");
+        Console.WriteLine(result);
+    }
+}
 ```
