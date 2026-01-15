@@ -11,6 +11,14 @@
     "watch": "tsc --watch",
     "prepare": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/APIBrasil/apibrasil-mcp-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/APIBrasil/apibrasil-mcp-client/issues"
+  },
+  "homepage": "https://github.com/APIBrasil/apibrasil-mcp-client#readme",
   "keywords": [
     "mcp",
     "mcp-server",
