@@ -8,78 +8,54 @@ Exemplo básico usando `net/http`.
 package main
 
 import (
-	"bufio"
 	"bytes"
-	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
-	"strings"
 )
 
+// O servidor APIBrasil fala Streamable HTTP: mensagens JSON-RPC via POST em /mcp.
+// O id da sessão volta no header "Mcp-Session-Id" da resposta do initialize.
 const baseURL = "https://mcp.apibrasil.cloud/mcp"
 
+func post(client *http.Client, body, sessionID string) (*http.Response, error) {
+	req, _ := http.NewRequest("POST", baseURL, bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json, text/event-stream")
+	if sessionID != "" {
+		req.Header.Set("Mcp-Session-Id", sessionID)
+	}
+	return client.Do(req)
+}
+
 func main() {
-	fmt.Println("Conectando ao fluxo SSE...")
+	client := &http.Client{}
 
-	// 1. Iniciar SSE para pegar SessionID
-	resp, err := http.Get(baseURL)
+	// 1. initialize -> captura o Mcp-Session-Id
+	initBody := `{"jsonrpc":"2.0","id":"init","method":"initialize","params":{"protocolVersion":"2025-06-18","clientInfo":{"name":"go","version":"1.0.0"},"capabilities":{}}}`
+	initResp, err := post(client, initBody, "")
 	if err != nil {
 		panic(err)
 	}
-	defer resp.Body.Close()
+	sessionID := initResp.Header.Get("Mcp-Session-Id")
+	initResp.Body.Close()
+	fmt.Println("Sessão:", sessionID)
 
-	scanner := bufio.NewScanner(resp.Body)
-	var postURL string
-
-	// Loop simples para ler o evento 'endpoint'
-	// Em produção, use uma lib SSE completa
-	for scanner.Scan() {
-		line := scanner.Text()
-		fmt.Println("Recebido:", line)
-
-		if strings.HasPrefix(line, "data: ") {
-			// O servidor manda o endpoint relativo no campo data
-			endpoint := strings.TrimPrefix(line, "data: ")
-			// Ajuste para montar URL completa
-			if strings.HasPrefix(endpoint, "/") {
-				// ex: /mcp?sessionId=xyz
-				postURL = "https://mcp.apibrasil.cloud" + endpoint
-			} else {
-				postURL = endpoint
-			}
-			fmt.Println("Endpoint de POST detectado:", postURL)
-			break // Temos o que precisamos para fazer chamadas
-		}
+	// 2. notifications/initialized
+	if n, err := post(client, `{"jsonrpc":"2.0","method":"notifications/initialized"}`, sessionID); err == nil {
+		n.Body.Close()
 	}
 
-	if postURL == "" {
-		fmt.Println("Não foi possível obter SessionID.")
-		return
-	}
-
-	// 2. Fazer uma chamada de ferramenta (JSON-RPC)
-	payload := map[string]interface{}{
-		"jsonrpc": "2.0",
-		"method":  "tools/call",
-		"id":      1,
-		"params": map[string]interface{}{
-			"name": "cep_lookup",
-			"arguments": map[string]interface{}{
-				"cep":         "01001000",
-				"bearer":      "SEU_BEARER",
-				"deviceToken": "SEU_DEVICE_TOKEN",
-			},
-		},
-	}
-
-	jsonData, _ := json.Marshal(payload)
-	postResp, err := http.Post(postURL, "application/json", bytes.NewBuffer(jsonData))
+	// 3. tools/call -> cep_lookup
+	callBody := `{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"cep_lookup","arguments":{"cep":"01001000","bearer":"SEU_BEARER","deviceToken":"SEU_DEVICE_TOKEN"}}}`
+	callResp, err := post(client, callBody, sessionID)
 	if err != nil {
 		panic(err)
 	}
-	defer postResp.Body.Close()
+	defer callResp.Body.Close()
 
-	fmt.Println("Chamada enviada. Status:", postResp.Status)
-	// Ler resposta...
+	// A resposta pode vir como JSON puro ou stream SSE (linhas "data: {...}")
+	out, _ := io.ReadAll(callResp.Body)
+	fmt.Println(string(out))
 }
 ```

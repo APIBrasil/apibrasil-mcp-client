@@ -164,6 +164,22 @@ def _build_auto_index(repo_root: Path) -> str:
 
             lines.append(f"  - [{title}]({readme_link}){suffix}{extra}")
 
+        # Flat markdown pages directly in the category (ex.: vibe-coder/01-*.md)
+        for md in sorted(
+            [
+                p
+                for p in category_dir.iterdir()
+                if p.is_file()
+                and p.suffix.lower() == ".md"
+                and p.name.lower() != "readme.md"
+            ],
+            key=lambda p: p.name.lower(),
+        ):
+            title, desc = _extract_title_and_description(md)
+            md_link = _path_link(repo_root, md)
+            suffix = f" — {desc}" if desc else ""
+            lines.append(f"  - [{title}]({md_link}){suffix}")
+
         lines.append("")  # blank line between categories
 
     # remove trailing blank line

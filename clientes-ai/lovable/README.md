@@ -1,6 +1,6 @@
 # Configuração para Lovable.dev
 
-O Lovable conecta-se nativamente via HTTPS/SSE, sem necessidade de adaptadores.
+O Lovable conecta-se nativamente via HTTPS (Streamable HTTP), sem necessidade de adaptadores.
 
 1. Acesse seu projeto no [Lovable.dev](https://lovable.dev).
 2. Vá em **Settings** (Configurações) > **MCP Servers** (ou Integrações).

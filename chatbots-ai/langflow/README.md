@@ -10,7 +10,8 @@ O LangFlow permite criar componentes customizados em Python.
 
 ```python
 from langflow import CustomComponent
-from mcp.client.sse import sse_client
+from mcp import ClientSession
+from mcp.client.streamable_http import streamablehttp_client
 import asyncio
 
 class MCPToolComponent(CustomComponent):
@@ -26,9 +27,11 @@ class MCPToolComponent(CustomComponent):
     def build(self, tool_name: str, arguments: dict):
         async def run_mcp():
             url = "https://mcp.apibrasil.cloud/mcp"
-            async with sse_client(url) as client:
-                result = await client.call_tool(tool_name, arguments)
-                return str(result)
+            async with streamablehttp_client(url) as (read, write, _):
+                async with ClientSession(read, write) as session:
+                    await session.initialize()
+                    result = await session.call_tool(tool_name, arguments)
+                    return str(result)
         
         # Nota: LangFlow roda em loop assíncrono, pode precisar de ajustes
         return asyncio.run(run_mcp())

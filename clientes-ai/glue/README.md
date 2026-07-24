@@ -6,7 +6,7 @@ Glue é uma plataforma de chat para times com suporte a Agentes.
 
 1. Vá em **Integrations** ou **MCP Settings** no painel do Glue.
 2. Adicione um novo servidor.
-3. Insira a URL SSE direta:
+3. Insira a URL direta do servidor (Streamable HTTP):
    ```
    https://mcp.apibrasil.cloud/mcp
    ```

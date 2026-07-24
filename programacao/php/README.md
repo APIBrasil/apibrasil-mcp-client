@@ -56,5 +56,5 @@ try {
 }
 ```
 
-## Nota sobre MCP (SSE)
-O PHP tradicional é síncrono (request-response). Para usar o protocolo MCP completo (que exige conexão SSE persistente), você precisaria de um loop de eventos assíncrono (como ReactPHP ou Swoole). Para aplicações web padrão (Laravel/Symfony), use a API REST conforme o exemplo acima.
+## Nota sobre MCP (Streamable HTTP)
+O PHP tradicional é síncrono (request-response). Para usar o protocolo MCP completo (que mantém uma sessão com streaming via Streamable HTTP), você precisaria de um loop de eventos assíncrono (como ReactPHP ou Swoole) ou gerenciar o `Mcp-Session-Id` entre requisições. Para aplicações web padrão (Laravel/Symfony), use a API REST conforme o exemplo acima.

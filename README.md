@@ -4,6 +4,8 @@
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square) ![Protocol](https://img.shields.io/badge/protocol-MCP-success?style=flat-square) ![API](https://img.shields.io/badge/API-v2-orange?style=flat-square)
 
+**🌐 Idioma:** **Português** · [English](./README.en.md)
+
 Base de conhecimento, configurações e guias para consumir o servidor **MCP** da APIBrasil em **clientes de IA**, **IDEs**, **chatbots** e **ferramentas de automação**.
 
 > **Nota:** A [APIBrasil](https://apibrasil.io) é um Gateway de APIs unificado para dados nacionais (CEP, CNPJ, Veículos, etc). Este repositório foca na integração dessas APIs via **Protocolo MCP** para Agentes de Inteligência Artificial.
@@ -16,7 +18,7 @@ Escolha o método de conexão baseado na natureza da sua plataforma:
 
 | Característica | Protocolo MCP  | API REST  |
 | :--- | :--- | :--- |
-| **Protocolo** | SSE (Server-Sent Events) | HTTP Standard |
+| **Protocolo** | Streamable HTTP (streaming) | HTTP Standard |
 | **Estado** | **Stateful** (Sessão Persistente) | **Stateless** (Request/Response) |
 | **Uso Ideal** | Cursor, Claude, Agentes de IA | n8n, Typebot, Zapier, Webhooks |
 | **Vantagem** | Contexto contínuo para LLMs | Simplicidade e compatibilidade universal |
@@ -42,6 +44,7 @@ Selecione o seu caso de uso para ir direto à documentação específica:
 | **Criar Chatbot** | [`chatbots-ai/`](./chatbots-ai/) | Typebot, Flowise, LangFlow, Dify |
 | **Automação** | [`lowcode-automacao/`](./lowcode-automacao/) | n8n, Make, Zapier, Bubble |
 | **Programar** | [`programacao/`](./programacao/) | Python, Node.js, Go, Java, C# |
+| **Entender o MCP** | [`conceitos/`](./conceitos/) | Credenciais, descoberta, troubleshooting |
 
 ## Configurações Rápidas (Snippets)
 
@@ -53,11 +56,15 @@ Copie e cole as configurações abaixo diretamente no seu arquivo de preferênci
 - **Zed Editor**: [`settings.json`](./ide-editores/zed/settings.json)
 
 ### CLI Bridge (Ponte Local)
-Para conectar via terminal ou adaptadores que aceitam comandos `stdio`:
+Para conectar via terminal ou clientes que só aceitam comandos `stdio`, use a ponte oficial [`mcp-remote`](https://www.npmjs.com/package/mcp-remote), que converte `stdio` ⇆ **Streamable HTTP** e injeta as credenciais por header:
 
 ```bash
-npx -y @modelcontextprotocol/server-sse-client --url https://mcp.apibrasil.cloud/mcp
+npx -y mcp-remote https://mcp.apibrasil.cloud/mcp \
+  --header "X-Apibrasil-Bearer:SEU_BEARER_TOKEN" \
+  --header "DeviceToken:SEU_DEVICE_TOKEN"
 ```
+
+> Como passar credenciais em cada cliente (header, `env` ou argumento): veja [`conceitos/credenciais/`](./conceitos/credenciais/).
 
 ### Exemplo REST (PowerShell)
 Para testes rápidos de conectividade sem depender do protocolo MCP:
@@ -80,7 +87,7 @@ Invoke-RestMethod -Method Post `
 > [!IMPORTANT]
 > **Segurança e Estado**
 > 
-> *   **Stateful:** O MCP mantém uma sessão ativa (`sessionId`) via SSE. Não tente usá-lo em ambientes que matam a conexão imediatamente (como Serverless Functions puras sem stream).
+> *   **Stateful:** O MCP mantém uma sessão ativa (`Mcp-Session-Id`) via **Streamable HTTP**. Não tente usá-lo em ambientes que matam a conexão imediatamente (como Serverless Functions puras sem stream).
 > *   **Tokens:** Jamais comite seus tokens reais no repositório. Utilize variáveis de ambiente ou gerenciadores de segredos.
 
 ## Mapa do Repositório
@@ -93,7 +100,7 @@ Esta seção é otimizada para indexação e navegação rápida.
 - **[assets](./assets)**
 
 - **[chatbots-ai](./chatbots-ai)**
-  - [Integração com Typebot](./chatbots-ai/README.md) — O Typebot executa fluxos rápidos e stateless. O protocolo MCP (que é stateful via SSE) não é ideal para conexão direta via blocos nativos HTTP do Typebot.
+  - [Integração com Typebot](./chatbots-ai/README.md) — O Typebot executa fluxos rápidos e stateless. O protocolo MCP (que é stateful via Streamable HTTP) não é ideal para conexão direta via blocos nativos HTTP do...
   - [Integração com Botpress](./chatbots-ai/botpress/README.md) — No Botpress Studio, adicione um card **Execute Code** no seu fluxo.
   - [Integração com Dify.ai](./chatbots-ai/dify/README.md) — O Dify aceita **API Extensions** ou **Tools** customizadas via OpenAPI/Swagger.
   - [Integração com Flowise](./chatbots-ai/flowise/README.md) — O Flowise é uma ferramenta Low-Code para construir LLM Apps e suporta integração via **Custom Tools**.
@@ -114,11 +121,17 @@ Esta seção é otimizada para indexação e navegação rápida.
   - [Configuração para Glue AI](./clientes-ai/glue/README.md) — Glue é uma plataforma de chat para times com suporte a Agentes.
   - [Configuração para HyperChat](./clientes-ai/hyperchat/README.md) — HyperChat é um cliente desktop nativo para macOS/Windows.
   - [Configuração para LangDock](./clientes-ai/langdock/README.md) — LangDock é uma plataforma enterprise para LLMs.
-  - [Configuração para LibreChat](./clientes-ai/librechat/README.md) — O LibreChat suporta conexões SSE nativas, facilitando a integração.
-  - [Configuração para Lovable.dev](./clientes-ai/lovable/README.md) — O Lovable conecta-se nativamente via HTTPS/SSE, sem necessidade de adaptadores.
+  - [Configuração para LibreChat](./clientes-ai/librechat/README.md) — O LibreChat suporta conexões MCP remotas nativas (transporte `streamable-http`), facilitando a integração.
+  - [Configuração para Lovable.dev](./clientes-ai/lovable/README.md) — O Lovable conecta-se nativamente via HTTPS (Streamable HTTP), sem necessidade de adaptadores.
   - [Configuração para MindPal](./clientes-ai/mindpal/README.md) — MindPal é um cliente web focado em fluxos visuais.
   - [Configuração via Smithery.ai](./clientes-ai/smithery/README.md) — Se o servidor estiver publicado no Smithery registry:
   - [Configuração para TypingMind](./clientes-ai/typingmind/README.md) — TypingMind é uma interface web popular para ChatGPT/Claude que suporta plugins.
+
+- **[conceitos](./conceitos)**
+  - [Conceitos do MCP APIBrasil](./conceitos/README.md) — Guias de referência sobre **como consumir** o endpoint MCP da APIBrasil — para além do "copie e cole a config". Leia estas páginas quando precisar autenticar...
+  - [Credenciais (bearer, DeviceToken, SecretKey)](./conceitos/credenciais/README.md) — A maioria das ferramentas da APIBrasil precisa de **credenciais** para funcionar. Sem elas, o cliente conecta ao endpoint MCP mas toda chamada tarifada falha...
+  - [Descoberta dinâmica](./conceitos/descoberta/README.md) — Três ferramentas cobrem **qualquer serviço** do gateway APIBrasil — inclusive os que ainda não têm tool dedicada. Por isso a lista de ferramentas pode ser en...
+  - [Troubleshooting](./conceitos/troubleshooting/README.md) — O endpoint MCP **preserva o status HTTP semântico do gateway** e o transforma em um resultado `isError` com a mensagem original e uma dica acionável — em vez...
 
 - **[ide-editores](./ide-editores)**
   - [Configuração para Cursor IDE](./ide-editores/README.md) — O Cursor conecta-se preferencialmente via comando local. Usaremos um adaptador para conectar ao servidor remoto.
@@ -135,13 +148,13 @@ Esta seção é otimizada para indexação e navegação rápida.
   - [Configuração para Zed Editor](./ide-editores/zed/README.md) — 1. Abra o Zed. ([settings](./ide-editores/zed/settings.json))
 
 - **[lowcode-automacao](./lowcode-automacao)**
-  - [Integração com n8n](./lowcode-automacao/README.md) — O n8n pode consumir o servidor MCP de duas formas: usando o nó **HTTP Request** (para chamadas manuais) ou o nó **Code** (para lidar com o handshake SSE).
+  - [Integração com n8n](./lowcode-automacao/README.md) — O n8n pode consumir o servidor MCP de duas formas: usando o nó **HTTP Request** (para chamadas manuais) ou o nó **Code** (para lidar com o handshake Streamab...
   - [Integração com ActivePieces](./lowcode-automacao/activepieces/README.md) — ActivePieces é uma alternativa open-source ao Zapier/n8n.
   - [Integração com Bubble.io](./lowcode-automacao/bubble/README.md) — O Bubble conecta-se via **API Connector**.
   - [Integração com FlutterFlow](./lowcode-automacao/flutterflow/README.md) — 1. No menu esquerdo, vá em **API Calls**.
   - [Integração com Google Sheets (Apps Script)](./lowcode-automacao/google_sheets/README.md) — Automatize planilhas com scripts customizados.
   - [Integração com Lasy.ai (IA do Ruyter / Vibe Coding)](./lowcode-automacao/lasy_ai/README.md) — A **Lasy.ai** é uma plataforma geradora de código (Text-to-App). Como ela cria o código para você (geralmente em React, Node.js ou HTML/JS), você deve **pedi...
-  - [Integração com Make (Integromat)](./lowcode-automacao/make/README.md) — O Make funciona via módulos HTTP. Assim como no n8n, conexões SSE persistentes não são nativas.
+  - [Integração com Make (Integromat)](./lowcode-automacao/make/README.md) — O Make funciona via módulos HTTP. Assim como no n8n, sessões MCP com stream persistente não são nativas.
   - [Integração com n8n](./lowcode-automacao/n8n/README.md) — O n8n é uma ferramenta de automação de fluxo de trabalho poderosa. Este guia mostra como conectar a APIBrasil usando nós nativos de **HTTP Request**.
   - [Integração com Microsoft Power Automate](./lowcode-automacao/power_automate/README.md) — 1. Vá em **Data** > **Custom Connectors**.
   - [Integração com Retool](./lowcode-automacao/retool/README.md) — Retool é ideal para painéis internos.
@@ -162,7 +175,7 @@ Esta seção é otimizada para indexação e navegação rápida.
 - **[programacao](./programacao)**
   - [Consumindo APIBrasil MCP com C# (.NET)](./programacao/README.md) — Exemplo usando `HttpClient`.
   - [Consumindo APIBrasil MCP com Go (Golang)](./programacao/go/README.md) — Exemplo básico usando `net/http`.
-  - [Consumindo APIBrasil MCP com Java](./programacao/java/README.md) — Exemplo usando Java 11+ (HttpClient nativo). Como não há SDK oficial estável para Java ainda, fazemos a conexão SSE e POST manualmente seguindo o protocolo.
+  - [Consumindo APIBrasil MCP com Java](./programacao/java/README.md) — Exemplo usando Java 11+ (HttpClient nativo). Como não há SDK oficial estável para Java ainda, falamos o protocolo Streamable HTTP manualmente (POST de mensag...
   - [Consumindo APIBrasil MCP com Node.js](./programacao/nodejs/README.md) — Este exemplo usa o SDK oficial do MCP para TypeScript/Node.js.
   - [Consumindo APIBrasil MCP com PHP](./programacao/php/README.md) — Exemplo usando **Guzzle**, o cliente HTTP mais popular do ecossistema PHP (padrão no Laravel).
   - [Consumindo APIBrasil MCP com Python](./programacao/python/README.md) — Este exemplo usa o SDK oficial `mcp` para Python (asyncio).
@@ -173,6 +186,21 @@ Esta seção é otimizada para indexação e navegação rápida.
   - [Integração com Vercel AI SDK (Next.js)](./programacao/vercel_ai_sdk/README.md) — Ideal para criar Chatbots com React que usam suas ferramentas.
 
 - **[vibe-coder](./vibe-coder)**
+  - [Dashboard de Vendas com Envio de WhatsApp](./vibe-coder/01-dashboard-whatsapp.md) — Este exemplo cria um painel administrativo. O objetivo é visualizar vendas e enviar comprovantes para clientes via WhatsApp com um clique.
+  - [Formulário Inteligente (CEP e CPF)](./vibe-coder/02-form-inteligente.md) — Este exemplo cria um formulário de cadastro de alta conversão que preenche o endereço automaticamente pelo CEP e valida o CPF em tempo real.
+  - [Bot de Rastreio de Encomendas](./vibe-coder/03-bot-rastreio.md) — Script profissional em Node.js para monitorar encomendas e notificar via WhatsApp. Ideal para e-commerce ou uso pessoal.
+  - [App de Consulta Veicular (Sinesp/Detran)](./vibe-coder/04-consulta-veicular.md) — Prompt para criar uma interface mobile moderna para consulta de placas, focada em utilidade e rapidez.
+  - [Bot de Agendamento Inteligente (Webhook)](./vibe-coder/05-bot-agendamento.md) — Um servidor intermediário (Middleware) que recebe mensagens do WhatsApp, processa intenções básicas e responde.
+  - [Disparo em Massa Inteligente (Python)](./vibe-coder/06-disparo-massa.md) — Script Python para envio de mensagens em massa com foco em segurança (anti-ban), logs detalhados e retomada de falhas.
+  - [Enriquecimento de Dados (CRM CLI)](./vibe-coder/07-crm-enrichment.md) — Ferramenta de linha de comando (CLI) profissional para consultar e enriquecer dados de empresas (B2B) usando CNPJ.
+  - [Bot de Previsão do Tempo (Cron)](./vibe-coder/08-clima-bot.md) — Serviço "Wake-up Call" que envia a previsão do tempo para uma lista de VIPs todas as manhãs.
+  - [Verificador de Dias Úteis (Smart Calendar)](./vibe-coder/09-verificador-feriados.md) — Módulo utilitário para verificar se uma data é dia útil, considerando fins de semana e feriados nacionais (via API). Inclui sistema de Cache em memória para...
+  - [Monitor de Saldo (Dashboard Pessoal)](./vibe-coder/10-monitor-saldo.md) — Uma ferramenta visual simples (HTML/JS) para verificar seu saldo e créditos na APIBrasil.
+  - [Prompt para V0.dev: Central de Comunicação (CRM de WhatsApp)](./vibe-coder/11-prompt-v0-dev.md) — Prompt otimizado para gerar uma interface de chat profissional (estilo Intercom/Zendesk) pronta para conectar com a APIBrasil.
+  - [Prompt para Bolt.new: SaaS de KYC (Validação Cadastral)](./vibe-coder/12-prompt-bolt-new.md) — Prompt para criar um SaaS completo de verificação de identidade usando a stack moderna do Bolt.
+  - [Prompt para Replit Agent: Bot Sommelier](./vibe-coder/13-prompt-replit-agent.md) — Cria um bot de WhatsApp inteligente hospedado no Replit, combinando APIBrasil (WhatsApp) e OpenAI (Inteligência).
+  - [App Streamlit: Consulta FIPE Profissional](./vibe-coder/14-script-streamlit.md) — Interface de dados rápida para consulta de preços de veículos.
+  - [Webhook Bridge (Cloudflare Worker)](./vibe-coder/15-webhook-bridge.md) — Middleware serverless para conectar serviços externos (Stripe, Typeform) ao WhatsApp da APIBrasil.
 <!-- END:AUTO_INDEX -->
 
 <details>
@@ -206,6 +234,10 @@ apibrasil-mcp-client
 │   ├── mindpal
 │   ├── smithery
 │   └── typingmind
+├── conceitos
+│   ├── credenciais
+│   ├── descoberta
+│   └── troubleshooting
 ├── ide-editores
 │   ├── continue
 │   ├── cursor
@@ -269,7 +301,7 @@ Para atualizar o índice auto-gerado e a árvore depois de criar/remover pastas:
 | Contexto | Termo de Busca |
 | :--- | :--- |
 | **Endpoint MCP** | `mcp.apibrasil.cloud/mcp` |
-| **Ponte NPX** | `@modelcontextprotocol/server-sse-client` |
+| **Ponte NPX** | `mcp-remote` |
 | **Config JSON** | `mcpServers` |
 | **Config Zed** | `"mcp": { "servers": ... }` |
 | **Gateway REST** | `gateway.apibrasil.io/api/v2` |

@@ -4,7 +4,7 @@ O Dify aceita **API Extensions** ou **Tools** customizadas via OpenAPI/Swagger.
 
 ## Como configurar
 
-Como o MCP usa JSON-RPC sobre SSE, ele não é uma API REST padrão Swagger.
+Como o MCP usa JSON-RPC sobre Streamable HTTP, ele não é uma API REST padrão Swagger.
 
 1. **Recomendado:** Use a funcionalidade "Code-based Tool" do Dify (se você rodar o Dify self-hosted).
 2. **Alternativa:** Crie um proxy simples (middleware) que converte REST (padrão Dify) para MCP.

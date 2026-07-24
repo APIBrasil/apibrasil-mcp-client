@@ -13,6 +13,10 @@ O Cursor conecta-se preferencialmente via comando local. Usaremos um adaptador p
    - **Name:** `APIBrasil`
    - **Type:** `command`
    - **Command:** `npx`
-   - **Args:** `-y @modelcontextprotocol/server-sse-client --url https://mcp.apibrasil.cloud/mcp`
+   - **Args:** `-y mcp-remote https://mcp.apibrasil.cloud/mcp --header "X-Apibrasil-Bearer:SEU_BEARER_TOKEN" --header "DeviceToken:SEU_DEVICE_TOKEN"`
 
-6. Clique em **Add**. A luz verde deve acender indicando conexão.
+6. Troque `SEU_BEARER_TOKEN` e `SEU_DEVICE_TOKEN` pelas suas credenciais da APIBrasil.
+7. Clique em **Add**. A luz verde deve acender indicando conexão.
+
+> [!NOTE]
+> O servidor usa **Streamable HTTP**; a ponte [`mcp-remote`](https://www.npmjs.com/package/mcp-remote) converte o `command`/stdio do Cursor para Streamable HTTP e injeta as credenciais via header. Veja [`../../conceitos/credenciais/`](../../conceitos/credenciais/).

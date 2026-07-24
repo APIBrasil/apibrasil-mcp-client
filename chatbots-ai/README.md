@@ -1,6 +1,6 @@
 # Integração com Typebot
 
-O Typebot executa fluxos rápidos e stateless. O protocolo MCP (que é stateful via SSE) não é ideal para conexão direta via blocos nativos HTTP do Typebot.
+O Typebot executa fluxos rápidos e stateless. O protocolo MCP (que é stateful via Streamable HTTP) não é ideal para conexão direta via blocos nativos HTTP do Typebot.
 
 ## Como Integrar
 
@@ -16,4 +16,4 @@ Se precisar *obrigatoriamente* passar pelo servidor MCP (ex: para aproveitar a l
 1. Crie uma **Cloud Function** (AWS Lambda / Vercel Edge) que faz o handshake MCP.
 2. Chame essa função no Typebot via bloco HTTP.
 
-Não é possível conectar SSE nativamente dentro do fluxo de chat padrão do Typebot.
+Não é possível manter um stream MCP nativamente dentro do fluxo de chat padrão do Typebot.

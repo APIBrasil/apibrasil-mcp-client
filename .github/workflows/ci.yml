@@ -11,10 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
@@ -22,7 +27,14 @@ jobs:
       run: |
         # Encontra todos os .json e tenta parsear com python -m json.tool
         # Se falhar, o script para e o CI falha.
-        find . -name "*.json" -not -path "./.git/*" -print0 | xargs -0 -I {} bash -c 'echo "Checking {}"; python3 -m json.tool "{}" > /dev/null'
+        find . -name "*.json" -not -path "./.git/*" -not -path "*/node_modules/*" -print0 \
+          | xargs -0 -I {} bash -c 'echo "Checking {}"; python3 -m json.tool "{}" > /dev/null'
+
+    - name: Check MCP bridge packages exist on npm
+      run: python3 scripts/check_mcp_packages.py
+
+    - name: Check internal markdown links
+      run: python3 scripts/check_links.py
 
     - name: Check if README index is up to date
       run: |

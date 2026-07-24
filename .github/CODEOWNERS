@@ -1,0 +1,5 @@
+# Code owners — revisores automaticamente solicitados em cada Pull Request.
+# Ajuste o handle abaixo para a equipe/usuário responsável pela manutenção.
+# Documentação: https://docs.github.com/pt/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+* @APIBrasil/maintainers

@@ -6,73 +6,48 @@ Exemplo usando `HttpClient`.
 
 ```csharp
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
 class Program
 {
-    static async Task Main(string[] args)
+    // O servidor APIBrasil fala Streamable HTTP: mensagens JSON-RPC via POST em /mcp.
+    // O id da sessão volta no header "Mcp-Session-Id" da resposta do initialize.
+    static readonly string ServerUrl = "https://mcp.apibrasil.cloud/mcp";
+
+    static async Task Main()
     {
-        var client = new HttpClient();
-        string baseUrl = "https://mcp.apibrasil.cloud/mcp";
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("Accept", "application/json, text/event-stream");
 
-        Console.WriteLine("Conectando ao SSE...");
+        // 1. initialize -> captura o Mcp-Session-Id
+        string initBody = @"{""jsonrpc"":""2.0"",""id"":""init"",""method"":""initialize"",""params"":{""protocolVersion"":""2025-06-18"",""clientInfo"":{""name"":""csharp"",""version"":""1.0.0""},""capabilities"":{}}}";
+        var initResp = await client.PostAsync(ServerUrl, new StringContent(initBody, Encoding.UTF8, "application/json"));
+        string sessionId = initResp.Headers.TryGetValues("Mcp-Session-Id", out var values) ? values.First() : null;
+        Console.WriteLine($"Sessão: {sessionId}");
 
-        // 1. Ler stream SSE para capturar URL de sessão
-        using (var stream = await client.GetStreamAsync(baseUrl))
-        using (var reader = new StreamReader(stream))
-        {
-            string line;
-            string postUrl = null;
+        // 2. notifications/initialized
+        await Send(client, @"{""jsonrpc"":""2.0"",""method"":""notifications/initialized""}", sessionId);
 
-            while ((line = await reader.ReadLineAsync()) != null)
-            {
-                Console.WriteLine($"Recebido: {line}");
-                if (line.StartsWith("data: "))
-                {
-                    var endpoint = line.Substring(6).Trim();
-                    // Constrói URL completa
-                    postUrl = "https://mcp.apibrasil.cloud" + endpoint;
-                    Console.WriteLine($"Session URL: {postUrl}");
-                    break; // Sai do loop para fazer o POST
-                }
-            }
-            
-            // 2. Enviar comando (JSON-RPC) em outra thread/task ou conexão
-            if (!string.IsNullOrEmpty(postUrl)) 
-            {
-                await CallTool(postUrl);
-            }
-        }
+        // 3. tools/call -> cep_lookup
+        string callBody = @"{""jsonrpc"":""2.0"",""id"":1,""method"":""tools/call"",""params"":{""name"":""cep_lookup"",""arguments"":{""cep"":""01001000"",""bearer"":""SEU_BEARER"",""deviceToken"":""SEU_DEVICE_TOKEN""}}}";
+        var callResp = await Send(client, callBody, sessionId);
+
+        // A resposta pode vir como JSON puro ou como stream SSE (linhas "data: {...}")
+        Console.WriteLine("\nResposta do Servidor:");
+        Console.WriteLine(await callResp.Content.ReadAsStringAsync());
     }
 
-    static async Task CallTool(string url)
+    static async Task<HttpResponseMessage> Send(HttpClient client, string body, string sessionId)
     {
-        var client = new HttpClient();
-        
-        string json = @"
+        var req = new HttpRequestMessage(HttpMethod.Post, ServerUrl)
         {
-            ""jsonrpc"": ""2.0"",
-            ""method"": ""tools/call"",
-            ""id"": 1,
-            ""params"": {
-                ""name"": ""cep_lookup"",
-                ""arguments"": {
-                    ""cep"": ""01001000"",
-                    ""bearer"": ""SEU_BEARER"",
-                    ""deviceToken"": ""SEU_DEVICE_TOKEN""
-                }
-            }
-        }";
-
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await client.PostAsync(url, content);
-        
-        string result = await response.Content.ReadAsStringAsync();
-        Console.WriteLine("\nResposta do Servidor:");
-        Console.WriteLine(result);
+            Content = new StringContent(body, Encoding.UTF8, "application/json")
+        };
+        if (!string.IsNullOrEmpty(sessionId)) req.Headers.Add("Mcp-Session-Id", sessionId);
+        return await client.SendAsync(req);
     }
 }
 ```

@@ -21,10 +21,10 @@ Copie e cole este prompt no chat da Lasy quando for criar seu app:
 
 ## E o protocolo MCP?
 
-Como a Lasy gera aplicativos finais (frontend/backend), é mais fácil e estável pedir para ela usar a **API REST direta** (gateway.apibrasil.io) do que tentar implementar o cliente MCP complexo (SSE) dentro do código gerado, a menos que você esteja criando um Agente de AI avançado.
+Como a Lasy gera aplicativos finais (frontend/backend), é mais fácil e estável pedir para ela usar a **API REST direta** (gateway.apibrasil.io) do que tentar implementar o cliente MCP (Streamable HTTP) dentro do código gerado, a menos que você esteja criando um Agente de AI avançado.
 
 Se você realmente quiser que a Lasy crie um **Agente MCP**, use este prompt:
 
-> "Crie um script Node.js que use a biblioteca `@modelcontextprotocol/sdk`. Ele deve se conectar via SSEClientTransport na url `https://mcp.apibrasil.cloud/mcp` e listar as ferramentas disponíveis."
+> "Crie um script Node.js que use a biblioteca `@modelcontextprotocol/sdk`. Ele deve se conectar via StreamableHTTPClientTransport na url `https://mcp.apibrasil.cloud/mcp` e listar as ferramentas disponíveis."
 
 **Nota:** A Lasy pode não ter acesso a instalar pacotes npm complexos dependendo de onde o código vai rodar. A opção REST (primeira acima) é a mais garantida.

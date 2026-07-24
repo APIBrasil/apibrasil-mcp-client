@@ -1,6 +1,6 @@
 # Configuração para LibreChat
 
-O LibreChat suporta conexões SSE nativas, facilitando a integração.
+O LibreChat suporta conexões MCP remotas nativas (transporte `streamable-http`), facilitando a integração.
 
 1. Vá em **Settings** (Configurações).
 2. Navegue até **Tools / MCP** (ou Agentes).

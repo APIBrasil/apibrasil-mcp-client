@@ -5,7 +5,7 @@
 ### Opção 1: Code by Zapier (Python/JS)
 O Zapier permite rodar scripts curtos.
 
-**Limitação:** O tempo limite de execução é curto (poucos segundos). O handshake SSE + Chamada de Tool pode estourar esse tempo.
+**Limitação:** O tempo limite de execução é curto (poucos segundos). O handshake MCP (Streamable HTTP) + Chamada de Tool pode estourar esse tempo.
 
 ### Opção 2: Zapier AI Actions
 Se você estiver usando o **Zapier Central** (plataforma de AI):

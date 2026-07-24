@@ -8,7 +8,9 @@ O Emacs não tem um cliente MCP "plug-and-play" visual, mas pode interagir via f
 
 1. Você deve rodar o cliente ponte localmente em um terminal:
    ```bash
-   npx -y @modelcontextprotocol/server-sse-client --url https://mcp.apibrasil.cloud/mcp
+   npx -y mcp-remote https://mcp.apibrasil.cloud/mcp \
+     --header "X-Apibrasil-Bearer:SEU_BEARER_TOKEN" \
+     --header "DeviceToken:SEU_DEVICE_TOKEN"
    ```
 
 2. Configure seu pacote LLM para reconhecer as ferramentas JSON disponíveis. (Configuração avançada, requer conhecimento de Elisp para mapear JSON-RPC para chamadas de função do Emacs).

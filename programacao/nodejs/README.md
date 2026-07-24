@@ -7,23 +7,28 @@ Este exemplo usa o SDK oficial do MCP para TypeScript/Node.js.
 Abra seu terminal na pasta do projeto e instale as dependências:
 
 ```bash
-npm install @modelcontextprotocol/sdk eventsource
+npm install @modelcontextprotocol/sdk
 ```
 
 ## 2. Código (index.js ou index.ts)
 
 ```typescript
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
-import { EventSource } from "eventsource";
-
-// Polyfill para Node.js (necessário pois SSE usa EventSource do browser)
-global.EventSource = EventSource;
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
 async function main() {
-  // Configura a conexão com o servidor de produção
-  const transport = new SSEClientTransport(
-    new URL("https://mcp.apibrasil.cloud/mcp")
+  // O servidor APIBrasil usa o transporte Streamable HTTP.
+  // Opcional: enviar as credenciais por header (ficam fora dos argumentos/logs).
+  const transport = new StreamableHTTPClientTransport(
+    new URL("https://mcp.apibrasil.cloud/mcp"),
+    {
+      requestInit: {
+        headers: {
+          "X-Apibrasil-Bearer": "SEU_BEARER_TOKEN",
+          "DeviceToken": "SEU_DEVICE_TOKEN"
+        }
+      }
+    }
   );
 
   const client = new Client(
@@ -39,8 +44,7 @@ async function main() {
   const { tools } = await client.listTools();
   console.log("Ferramentas disponíveis:", tools.map(t => t.name));
 
-  // Exemplo: Consultar CEP
-  // Substitua pelos seus tokens reais
+  // Exemplo: Consultar CEP (a tool exige bearer e deviceToken como argumentos)
   try {
     const resultado = await client.callTool({
       name: "cep_lookup",

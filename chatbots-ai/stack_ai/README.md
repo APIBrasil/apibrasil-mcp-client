@@ -11,4 +11,4 @@ Stack AI permite construir workflows de LLM complexos.
 5. **Inputs:** Conecte o input do usuário ao campo `cep` do Body JSON.
 
 ## LLM + MCP (Via Code Node)
-Se quiser usar o servidor MCP para manter o contexto, use um **Code Node (Python)** e implemente o cliente SSE (`mcp` library), similar ao exemplo do LangFlow.
+Se quiser usar o servidor MCP para manter o contexto, use um **Code Node (Python)** e implemente o cliente MCP Streamable HTTP (`mcp` library), similar ao exemplo do LangFlow.

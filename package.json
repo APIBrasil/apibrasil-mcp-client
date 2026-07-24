@@ -1,16 +1,8 @@
 {
-  "name": "apibrasil-mcp-server",
+  "name": "apibrasil-mcp-client",
   "version": "1.0.0",
-  "description": "Model Context Protocol (MCP) server for APIBrasil services",
-  "type": "module",
-  "bin": {
-    "apibrasil-mcp-server": "./dist/index.js"
-  },
-  "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "prepare": "npm run build"
-  },
+  "private": true,
+  "description": "Base de conhecimento, configurações e exemplos para consumir o servidor MCP da APIBrasil em clientes de IA, IDEs, chatbots e ferramentas de automação.",
   "repository": {
     "type": "git",
     "url": "https://github.com/APIBrasil/apibrasil-mcp-client.git"
@@ -21,7 +13,7 @@
   "homepage": "https://github.com/APIBrasil/apibrasil-mcp-client#readme",
   "keywords": [
     "mcp",
-    "mcp-server",
+    "model-context-protocol",
     "apibrasil",
     "whatsapp",
     "cpf",
@@ -31,15 +23,7 @@
   ],
   "author": "APIBrasil",
   "license": "MIT",
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "axios": "^1.6.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.3.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+  "scripts": {
+    "index": "python scripts/update_readme_tree.py"
   }
 }

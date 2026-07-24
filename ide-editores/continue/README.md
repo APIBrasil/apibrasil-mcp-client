@@ -17,9 +17,12 @@ O **Continue** é a principal extensão open-source que traz suporte MCP para o 
           "command": "npx",
           "args": [
             "-y",
-            "@modelcontextprotocol/server-sse-client",
-            "--url",
-            "https://mcp.apibrasil.cloud/mcp"
+            "mcp-remote",
+            "https://mcp.apibrasil.cloud/mcp",
+            "--header",
+            "X-Apibrasil-Bearer:SEU_BEARER_TOKEN",
+            "--header",
+            "DeviceToken:SEU_DEVICE_TOKEN"
           ]
         }
       }
@@ -28,4 +31,8 @@ O **Continue** é a principal extensão open-source que traz suporte MCP para o 
 }
 ```
 
-3. Reinicie a extensão/IDE.
+3. Troque `SEU_BEARER_TOKEN` e `SEU_DEVICE_TOKEN` pelas suas credenciais da APIBrasil.
+4. Reinicie a extensão/IDE.
+
+> [!NOTE]
+> O servidor usa **Streamable HTTP**; a ponte [`mcp-remote`](https://www.npmjs.com/package/mcp-remote) faz o `stdio` do Continue conversar com o endpoint remoto e injeta as credenciais via header. Veja [`../../conceitos/credenciais/`](../../conceitos/credenciais/).

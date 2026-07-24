@@ -12,7 +12,7 @@ npx @smithery/cli install apibrasil-mcp
 
 ## Configuração Manual
 
-Se precisar configurar manualmente na plataforma Smithery, utilize os mesmos parâmetros de conexão SSE:
+Se precisar configurar manualmente na plataforma Smithery, utilize os mesmos parâmetros de conexão:
 
-- **Type:** SSE (ou Command via ponte npx)
+- **Type:** Streamable HTTP (ou Command via ponte `mcp-remote`)
 - **URL:** `https://mcp.apibrasil.cloud/mcp`

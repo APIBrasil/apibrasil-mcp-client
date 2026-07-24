@@ -11,10 +11,18 @@ A maioria dos assistentes de código baseados em configuração local segue o pa
     "command": "npx",
     "args": [
       "-y",
-      "@modelcontextprotocol/server-sse-client",
-      "--url",
-      "https://mcp.apibrasil.cloud/mcp"
+      "mcp-remote",
+      "https://mcp.apibrasil.cloud/mcp",
+      "--header",
+      "X-Apibrasil-Bearer:SEU_BEARER_TOKEN",
+      "--header",
+      "DeviceToken:SEU_DEVICE_TOKEN"
     ]
   }
 }
 ```
+
+Troque `SEU_BEARER_TOKEN` e `SEU_DEVICE_TOKEN` pelas suas credenciais da APIBrasil.
+
+> [!NOTE]
+> O servidor usa **Streamable HTTP**; a ponte [`mcp-remote`](https://www.npmjs.com/package/mcp-remote) converte stdio ⇆ Streamable HTTP e injeta as credenciais via header.

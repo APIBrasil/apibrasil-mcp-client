@@ -1,41 +1,47 @@
 # Integração com n8n
 
-O n8n pode consumir o servidor MCP de duas formas: usando o nó **HTTP Request** (para chamadas manuais) ou o nó **Code** (para lidar com o handshake SSE).
+O n8n pode consumir o servidor MCP de duas formas: usando o nó **HTTP Request** (para chamadas manuais) ou o nó **Code** (para lidar com o handshake Streamable HTTP).
 
-Como o MCP exige uma conexão SSE para obter o `sessionId`, a melhor abordagem no n8n é via **Code Node**.
+Como o MCP exige um handshake (POST `initialize`) para obter o `Mcp-Session-Id`, a melhor abordagem no n8n é via **Code Node**.
 
 ## Exemplo de Code Node (JavaScript)
 
-Adicione um nó "Code" e use este script para fazer uma chamada rápida (Handshake + Execução):
+Adicione um nó "Code" e use este script para fazer o handshake e a chamada:
 
 ```javascript
 // Configuração
 const SERVER_URL = 'https://mcp.apibrasil.cloud/mcp';
-const TOOL_NAME = 'cep_lookup';
-const TOOL_ARGS = {
-  cep: '01001000',
-  bearer: 'SEU_BEARER',
-  deviceToken: 'SEU_DEVICE_TOKEN'
-};
 
-// 1. Obtém Session ID via GET (simulado)
-// Nota: Em produção, o MCP requer manter a conexão SSE aberta. 
-// Para chamadas únicas (stateless), recomenda-se usar a API direta da APIBrasil.
-// Mas para testar via MCP, você pode tentar capturar o primeiro evento:
-
-const response = await this.helpers.request({
-  method: 'GET',
+// 1. Handshake Streamable HTTP: POST initialize -> o Mcp-Session-Id volta no header
+const initResp = await this.helpers.httpRequest({
+  method: 'POST',
   url: SERVER_URL,
-  returnFullResponse: true,
   headers: {
-    'Accept': 'text/event-stream'
-  }
+    'Content-Type': 'application/json',
+    'Accept': 'application/json, text/event-stream',
+  },
+  body: {
+    jsonrpc: '2.0',
+    id: 'init',
+    method: 'initialize',
+    params: {
+      protocolVersion: '2025-06-18',
+      clientInfo: { name: 'n8n', version: '1.0.0' },
+      capabilities: {},
+    },
+  },
+  json: true,
+  returnFullResponse: true,
 });
+const sessionId = initResp.headers['mcp-session-id'];
 
-// Parseia o SessionID do stream (simplificado)
-// O n8n pode não suportar streams infinitos no HTTP Request padrão.
-// RECOMENDAÇÃO: Para n8n, use a API oficial REST da APIBrasil diretamente 
-// (https://gateway.apibrasil.io) em vez de passar pelo protocolo MCP,
+// 2. tools/call usando o Mcp-Session-Id no header
+//    body: { jsonrpc: '2.0', id: 1, method: 'tools/call',
+//            params: { name: 'cep_lookup',
+//                      arguments: { cep: '01001000', bearer: 'SEU_BEARER', deviceToken: 'SEU_DEVICE_TOKEN' } } }
+
+// RECOMENDAÇÃO: para automações transacionais (n8n), a API REST direta
+// (https://gateway.apibrasil.io) costuma ser mais simples que gerenciar sessão MCP,
 // pois o MCP é desenhado para manter estado com Agentes de IA.
 ```
 
