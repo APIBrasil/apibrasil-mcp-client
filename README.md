@@ -2,7 +2,7 @@
 
 <img src="./assets/banner.svg" width="100%" alt="APIBrasil MCP Banner">
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square) ![Protocol](https://img.shields.io/badge/protocol-MCP-success?style=flat-square) ![API](https://img.shields.io/badge/API-v2-orange?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square) ![Protocol](https://img.shields.io/badge/protocol-MCP-success?style=flat-square) ![API](https://img.shields.io/badge/API-v2-orange?style=flat-square) [![smithery badge](https://smithery.ai/badge/apibrasil/gate)](https://smithery.ai/servers/apibrasil/gate)
 
 **🌐 Idioma:** **Português** · [English](./README.en.md)
 
